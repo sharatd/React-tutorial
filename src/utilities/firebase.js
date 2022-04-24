@@ -1,15 +1,16 @@
 import { initializeApp } from 'firebase/app';
-import { getDatabase, onValue, ref } from 'firebase/database';
-import { useEffect, useState } from 'react';
+import { getDatabase, onValue, ref, set } from 'firebase/database';
+import { useState, useEffect } from 'react';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC9TGFztgJ9l0mFPHzHtHLEP7KC4mQ_jwg",
-  authDomain: "cs394-scheduler-47013.firebaseapp.com",
-  databaseURL: "https://cs394-scheduler-47013-default-rtdb.firebaseio.com",
-  projectId: "cs394-scheduler-47013",
-  storageBucket: "cs394-scheduler-47013.appspot.com",
-  messagingSenderId: "769511323809",
-  appId: "1:769511323809:web:329e77e3e7ea286bd098e0"
+  apiKey: "AIzaSyBoIQ6Tw3aSdUJyWUHGzswfHQq70cYuBUc",
+  authDomain: "scheduler-16335.firebaseapp.com",
+  databaseURL: "https://scheduler-16335-default-rtdb.firebaseio.com",
+  projectId: "scheduler-16335",
+  storageBucket: "scheduler-16335.appspot.com",
+  messagingSenderId: "247970157406",
+  appId: "1:247970157406:web:599891401eead8687a75cf",
+  measurementId: "G-4BYW56VV2D"
 };
 
 const firebase = initializeApp(firebaseConfig);
@@ -23,24 +24,23 @@ export const useData = (path, transform) => {
   useEffect(() => {
     const dbRef = ref(database, path);
     const devMode = !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
-    if (devMode) console.log(`loading ${path}`);
-
-    return onValue(
-      dbRef,
-      (snapshot) => {
-        const val = snapshot.val();
-        if (devMode) console.log(val);
-        setData(transform ? transform(val) : val);
-        setLoading(false);
-        setError(null);
-      },
-      (error) => {
-        setData(null);
-        setLoading(false);
-        setError(error);
-      }
-    );
+    if (devMode) { console.log(`loading ${path}`); }
+    return onValue(dbRef, (snapshot) => {
+      const val = snapshot.val();
+      if (devMode) { console.log(val); }
+      setData(transform ? transform(val) : val);
+      setLoading(false);
+      setError(null);
+    }, (error) => {
+      setData(null);
+      setLoading(false);
+      setError(error);
+    });
   }, [path, transform]);
 
   return [data, loading, error];
 };
+
+export const setData = (path, value) => (
+  set(ref(database, path), value)
+);
